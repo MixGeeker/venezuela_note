@@ -8,7 +8,8 @@
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit && tsc -p tsconfig.functions.json --noEmit",
-    "test": "node --experimental-strip-types --test tests/obsidian-core.test.ts"
+    "test": "node --experimental-strip-types --test tests/obsidian-core.test.ts",
+    "deploy": "npm run test && npm run typecheck && npm run build && wrangler pages deploy dist --project-name note-system --branch main"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",

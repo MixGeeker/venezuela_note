@@ -31,7 +31,16 @@ export async function getVaultIndex(env: Env): Promise<VaultIndex> {
 }
 
 async function fetchVaultEntries(env: Env, dirPath: string): Promise<VaultSourceEntry[]> {
-  const items = await listDirectory(env, dirPath)
+  let items: Awaited<ReturnType<typeof listDirectory>>
+  try {
+    items = await listDirectory(env, dirPath)
+  } catch (e) {
+    if (dirPath === '' && e instanceof Error && e.message === 'NOT_FOUND') {
+      return []
+    }
+    throw e
+  }
+
   const entries: VaultSourceEntry[] = []
 
   for (const item of items) {

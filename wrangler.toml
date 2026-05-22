@@ -5,9 +5,9 @@ compatibility_flags = ["nodejs_compat"]
 
 [[kv_namespaces]]
 binding = "NOTES_CACHE"
-id = "PLACEHOLDER_KV_NAMESPACE_ID"
+id = "f144fd8e215c479684006355512e181e"
 
 [vars]
 GITHUB_OWNER = "MixGeeker"
-GITHUB_REPO = "venezuela_note_dev"
+GITHUB_REPO = "venezuela_note_prod"
 NOTES_PATH = ""

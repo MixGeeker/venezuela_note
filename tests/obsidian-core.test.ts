@@ -156,6 +156,18 @@ Hidden`,
   assert.equal('content' in publicIndex.notes[0], false)
 })
 
+test('builds an empty vault index', () => {
+  const index = buildVaultIndexFromEntries([])
+
+  assert.deepEqual(index.notes, [])
+  assert.deepEqual(index.attachments, [])
+  assert.deepEqual(index.tags, [])
+  assert.deepEqual(index.aliases, {})
+  assert.deepEqual(index.brokenLinks, [])
+  assert.deepEqual(index.orphanNotes, [])
+  assert.deepEqual(index.graph, { nodes: [], edges: [] })
+})
+
 test('resolves localized title fragments to English file paths when unique', () => {
   const index = buildVaultIndexFromEntries([
     {
