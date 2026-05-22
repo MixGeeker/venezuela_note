@@ -11,11 +11,18 @@ function headers(env: Env): HeadersInit {
   return {
     Authorization: `Bearer ${env.GITHUB_TOKEN}`,
     Accept: 'application/vnd.github.v3+json',
+    'User-Agent': 'note-system/1.0',
   }
 }
 
+function buildContentsUrl(env: Env, path: string): string {
+  const base = `${GITHUB_API}/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents`
+  const parts = [env.NOTES_PATH, path].filter(Boolean)
+  return parts.length ? `${base}/${parts.join('/')}` : base
+}
+
 export async function listDirectory(env: Env, path: string): Promise<GhContent[]> {
-  const url = `${GITHUB_API}/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${env.NOTES_PATH}/${path}`
+  const url = buildContentsUrl(env, path)
   const res = await fetch(url, { headers: headers(env) })
   if (!res.ok) {
     if (res.status === 404) throw new Error('NOT_FOUND')
@@ -26,7 +33,7 @@ export async function listDirectory(env: Env, path: string): Promise<GhContent[]
 }
 
 export async function getFileContent(env: Env, path: string): Promise<GhFileContent> {
-  const url = `${GITHUB_API}/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${env.NOTES_PATH}/${path}`
+  const url = buildContentsUrl(env, path)
   const res = await fetch(url, { headers: headers(env) })
   if (!res.ok) {
     if (res.status === 404) throw new Error('NOT_FOUND')

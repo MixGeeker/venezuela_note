@@ -23,7 +23,9 @@
     "vue-tsc": "^3.3.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260522.1",
     "@types/markdown-it": "^14.1.2",
+    "@types/node": "^25.9.1",
     "wrangler": "^4.93.1"
   }
 }

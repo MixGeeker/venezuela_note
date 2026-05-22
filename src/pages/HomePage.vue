@@ -27,7 +27,7 @@ import { useNotesStore } from '@/stores/notes'
 import MainLayout from '@/layouts/MainLayout.vue'
 import NoteList from '@/components/NoteList.vue'
 import LoadingSkeleton from '@/components/LoadingSkeleton.vue'
-import type { NoteMeta, TreeNode } from '@/types'
+import type { NoteMeta } from '@/types'
 
 const notesStore = useNotesStore()
 

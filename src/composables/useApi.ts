@@ -11,7 +11,7 @@ export function useApi() {
     try {
       const res = await fetch(path)
       if (!res.ok) {
-        const body = await res.json().catch(() => ({ message: res.statusText }))
+        const body = await res.json().catch(() => ({ message: res.statusText })) as { message?: string }
         throw { message: body.message ?? res.statusText, status: res.status } as ApiError
       }
       return (await res.json()) as T

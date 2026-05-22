@@ -20,15 +20,22 @@
     </div>
 
     <!-- Markdown content -->
-    <div class="note-content" v-html="note.html" />
+    <div class="note-content" v-html="renderedHtml" />
   </article>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { NoteContent } from '@/types'
+import { renderMarkdown } from '@/utils/markdown'
 import 'highlight.js/styles/github.css'
 
-defineProps<{ note: NoteContent }>()
+const props = defineProps<{ note: NoteContent }>()
+
+const renderedHtml = computed(() => {
+  const content = props.note.html || props.note.content
+  return renderMarkdown(content)
+})
 
 function displayName(name: string): string {
   return name.replace(/\.md$/, '')
