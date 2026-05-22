@@ -4,6 +4,14 @@ export interface NoteMeta {
   type: 'file'
   sha: string
   size: number
+  title: string
+  aliases: string[]
+  tags: string[]
+  permalink?: string
+  published: boolean
+  headings: NoteHeading[]
+  outboundLinks: VaultLink[]
+  backlinks: Backlink[]
 }
 
 export interface NoteDir {
@@ -20,14 +28,79 @@ export interface NoteContent {
   frontmatter: Record<string, unknown> | null
   content: string
   html: string
+  links: VaultLink[]
+  embeds: VaultLink[]
+  diagnostics: LinkDiagnostic[]
 }
 
 export interface SearchResult {
   name: string
   path: string
+  title?: string
+  tags?: string[]
   textMatches: Array<{
     fragment: string
   }>
+}
+
+export interface NoteHeading {
+  level: number
+  text: string
+  slug: string
+}
+
+export interface VaultLink {
+  id: string
+  syntax: 'wikilink' | 'markdown'
+  sourcePath: string
+  raw: string
+  rawTarget: string
+  display?: string
+  embed: boolean
+  resolved: boolean
+  targetType?: 'note' | 'attachment'
+  targetPath?: string
+  anchor?: string
+  blockId?: string
+  reason?: 'not_found' | 'ambiguous'
+  candidates?: string[]
+}
+
+export interface LinkDiagnostic {
+  sourcePath: string
+  rawTarget: string
+  message: string
+  reason: 'not_found' | 'ambiguous'
+  candidates?: string[]
+}
+
+export interface Backlink {
+  sourcePath: string
+  sourceTitle: string
+  display: string
+  anchor?: string
+}
+
+export interface AttachmentMeta {
+  name: string
+  path: string
+  type: 'file'
+  sha: string
+  size: number
+  mimeType: string
+}
+
+export interface VaultIndex {
+  notes: Array<NoteMeta & { diagnostics: LinkDiagnostic[] }>
+  attachments: AttachmentMeta[]
+  tags: Array<{ tag: string; count: number; notes: string[] }>
+  aliases: Record<string, string[]>
+  brokenLinks: LinkDiagnostic[]
+  orphanNotes: string[]
+  graph: {
+    nodes: Array<{ id: string; title: string }>
+    edges: Array<{ source: string; target: string }>
+  }
 }
 
 export interface ApiError {

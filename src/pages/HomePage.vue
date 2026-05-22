@@ -34,6 +34,7 @@ import NoteViewer from '@/components/NoteViewer.vue'
 import NoteList from '@/components/NoteList.vue'
 import LoadingSkeleton from '@/components/LoadingSkeleton.vue'
 import type { NoteContent, NoteMeta } from '@/types'
+import { encodeVaultPath } from '@/utils/routes'
 
 const notesStore = useNotesStore()
 const readme = ref<NoteContent | null>(null)
@@ -45,7 +46,7 @@ const rootFiles = computed(() =>
 
 onMounted(async () => {
   try {
-    const res = await fetch('/api/notes/README.md')
+    const res = await fetch(`/api/notes/${encodeVaultPath('README.md')}`)
     if (res.ok) {
       readme.value = await res.json()
     }

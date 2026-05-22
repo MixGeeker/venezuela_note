@@ -1,4 +1,5 @@
-import { listDirectory, getFileContent, decodeBase64 } from '../../_shared/github'
+import { buildTreeFromIndex, findNoteByRequestPath, normalizeVaultPath } from '../../_shared/obsidian-core'
+import { getVaultIndex } from '../../_shared/obsidian'
 
 interface Env {
   GITHUB_TOKEN: string
@@ -16,7 +17,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     return handleTree(context.env)
   }
 
-  if (notePath.includes('..')) {
+  if (normalizeVaultPath(notePath) === null) {
     return Response.json({ message: 'Invalid path', status: 400 }, { status: 400 })
   }
 
@@ -24,112 +25,52 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 }
 
 async function handleTree(env: Env) {
-  const cached = await env.NOTES_CACHE.get('notes:tree', 'json')
-  if (cached) return Response.json(cached)
-
   try {
-    const tree = await fetchTreeRecursive(env, '')
-    await env.NOTES_CACHE.put('notes:tree', JSON.stringify(tree), { expirationTtl: 300 })
-    return Response.json(tree)
+    const index = await getVaultIndex(env)
+    return Response.json(buildTreeFromIndex(index))
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Unknown error'
-    const status = msg === 'NOT_FOUND' ? 404 : 500
-    return Response.json({ message: msg, status }, { status })
+    return errorResponse(e)
   }
 }
 
 async function handleNote(env: Env, notePath: string) {
-  const cacheKey = `notes:content:${notePath}`
-  const cached = await env.NOTES_CACHE.get(cacheKey, 'json')
-  if (cached) return Response.json(cached)
-
   try {
-    const file = await getFileContent(env, notePath)
-    const raw = decodeBase64(file.content)
-    const { frontmatter, content } = parseFrontmatter(raw)
+    const index = await getVaultIndex(env)
+    const note = findNoteByRequestPath(index, notePath)
+    if (!note) {
+      return Response.json({ message: 'Note not found', status: 404 }, { status: 404 })
+    }
 
-    const result = {
+    return Response.json({
       meta: {
-        name: file.name,
-        path: notePath,
-        type: 'file' as const,
-        sha: file.sha,
-        size: file.size,
-      },
-      frontmatter,
-      content,
-      html: content,
-    }
-
-    await env.NOTES_CACHE.put(cacheKey, JSON.stringify(result), { expirationTtl: 300 })
-    return Response.json(result)
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Unknown error'
-    const status = msg === 'NOT_FOUND' ? 404 : 500
-    return Response.json({ message: msg, status }, { status })
-  }
-}
-
-async function fetchTreeRecursive(env: Env, dirPath: string): Promise<TreeNode[]> {
-  const items = await listDirectory(env, dirPath)
-  const result: TreeNode[] = []
-
-  for (const item of items) {
-    const relativePath = env.NOTES_PATH
-      ? item.path.replace(new RegExp(`^${escapeRegex(env.NOTES_PATH)}/?`), '')
-      : item.path
-    if (item.type === 'dir') {
-      const children = await fetchTreeRecursive(env, relativePath)
-      result.push({
-        name: item.name,
-        path: relativePath,
-        type: 'dir',
-        children,
-      })
-    } else if (item.name.endsWith('.md')) {
-      result.push({
-        name: item.name,
-        path: relativePath,
+        name: note.name,
+        path: note.path,
         type: 'file',
-        sha: item.sha,
-        size: item.size,
-      })
-    }
+        sha: note.sha,
+        size: note.size,
+        title: note.title,
+        aliases: note.aliases,
+        tags: note.tags,
+        permalink: note.permalink,
+        published: note.published,
+        headings: note.headings,
+        outboundLinks: note.outboundLinks,
+        backlinks: note.backlinks,
+      },
+      frontmatter: note.frontmatter,
+      content: note.content,
+      html: note.content,
+      links: note.outboundLinks,
+      embeds: note.outboundLinks.filter((link) => link.embed),
+      diagnostics: note.diagnostics,
+    })
+  } catch (e) {
+    return errorResponse(e)
   }
-
-  return result
 }
 
-function parseFrontmatter(raw: string) {
-  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/)
-  if (!match) return { frontmatter: null, raw }
-
-  const yaml = match[1]
-  const frontmatter: Record<string, string | string[]> = {}
-  for (const line of yaml.split('\n')) {
-    const idx = line.indexOf(':')
-    if (idx === -1) continue
-    const key = line.slice(0, idx).trim()
-    const value = line.slice(idx + 1).trim()
-    if (value.startsWith('[') && value.endsWith(']')) {
-      frontmatter[key] = value.slice(1, -1).split(',').map(s => s.trim())
-    } else {
-      frontmatter[key] = value
-    }
-  }
-
-  return { frontmatter, content: raw.slice(match[0].length) }
-}
-
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-interface TreeNode {
-  name: string
-  path: string
-  type: 'file' | 'dir'
-  sha?: string
-  size?: number
-  children?: TreeNode[]
+function errorResponse(e: unknown): Response {
+  const msg = e instanceof Error ? e.message : 'Unknown error'
+  const status = msg === 'NOT_FOUND' ? 404 : 500
+  return Response.json({ message: msg, status }, { status })
 }

@@ -24,11 +24,11 @@
       <router-link
         v-for="result in notesStore.searchResults"
         :key="result.path"
-        :to="`/note/${result.path}`"
+        :to="noteRoute(result.path)"
         class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0"
         @click="showDropdown = false; query = ''"
       >
-        <div class="text-sm font-medium text-gray-900">{{ result.name.replace(/\.md$/, '') }}</div>
+        <div class="text-sm font-medium text-gray-900">{{ result.title || result.name.replace(/\.md$/, '') }}</div>
         <div class="text-xs text-gray-500 mt-0.5">{{ result.path }}</div>
       </router-link>
       <router-link
@@ -47,6 +47,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDebounceFn, onClickOutside } from '@vueuse/core'
 import { useNotesStore } from '@/stores/notes'
+import { noteRoute } from '@/utils/routes'
 
 const router = useRouter()
 const notesStore = useNotesStore()

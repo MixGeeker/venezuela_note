@@ -28,7 +28,7 @@ export async function listDirectory(env: Env, path: string): Promise<GhContent[]
     if (res.status === 404) throw new Error('NOT_FOUND')
     throw new Error(`GitHub API error: ${res.status}`)
   }
-  const data = await res.json()
+  const data = await res.json() as GhContent | GhContent[]
   return Array.isArray(data) ? data : [data]
 }
 
@@ -39,7 +39,7 @@ export async function getFileContent(env: Env, path: string): Promise<GhFileCont
     if (res.status === 404) throw new Error('NOT_FOUND')
     throw new Error(`GitHub API error: ${res.status}`)
   }
-  return await res.json()
+  return await res.json() as GhFileContent
 }
 
 export async function searchCode(env: Env, query: string): Promise<GhSearchResult> {
@@ -47,7 +47,7 @@ export async function searchCode(env: Env, query: string): Promise<GhSearchResul
   const url = `${GITHUB_API}/search/code?q=${encodeURIComponent(q)}`
   const res = await fetch(url, { headers: headers(env) })
   if (!res.ok) throw new Error(`GitHub search error: ${res.status}`)
-  return await res.json()
+  return await res.json() as GhSearchResult
 }
 
 export function decodeBase64(data: string): string {
@@ -57,6 +57,15 @@ export function decodeBase64(data: string): string {
       .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
       .join(''),
   )
+}
+
+export function decodeBase64Bytes(data: string): Uint8Array {
+  const binary = atob(data.replace(/\n/g, ''))
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes
 }
 
 interface GhContent {

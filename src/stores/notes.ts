@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { TreeNode, NoteContent, SearchResult } from '@/types'
+import { encodeVaultPath } from '@/utils/routes'
 
 export const useNotesStore = defineStore('notes', () => {
   const tree = ref<TreeNode[]>([])
@@ -27,7 +28,7 @@ export const useNotesStore = defineStore('notes', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await fetch(`/api/notes/${path}`)
+      const res = await fetch(`/api/notes/${encodeVaultPath(path)}`)
       if (!res.ok) {
         if (res.status === 404) throw new Error('Note not found')
         throw new Error(`Failed to fetch note: ${res.status}`)
@@ -44,7 +45,11 @@ export const useNotesStore = defineStore('notes', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+      const isTagSearch = query.startsWith('#')
+      const params = new URLSearchParams(
+        isTagSearch ? { tag: query.slice(1) } : { q: query },
+      )
+      const res = await fetch(`/api/search?${params.toString()}`)
       if (!res.ok) throw new Error(`Search failed: ${res.status}`)
       searchResults.value = await res.json()
     } catch (e) {

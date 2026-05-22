@@ -6,10 +6,10 @@
     <router-link
       v-for="note in notes"
       :key="note.path"
-      :to="`/note/${note.path}`"
+      :to="noteRoute(note.path)"
       class="block p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-colors"
     >
-      <h3 class="font-medium text-gray-900">{{ displayName(note.name) }}</h3>
+      <h3 class="font-medium text-gray-900">{{ note.title || displayName(note.name) }}</h3>
       <p class="text-sm text-gray-500 mt-1">{{ note.path }}</p>
     </router-link>
   </div>
@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import type { NoteMeta } from '@/types'
+import { noteRoute } from '@/utils/routes'
 
 defineProps<{ notes: NoteMeta[] }>()
 
