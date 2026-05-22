@@ -2,6 +2,7 @@ type Env = {
   GITHUB_TOKEN: string
   GITHUB_OWNER: string
   GITHUB_REPO: string
+  NOTES_PATH: string
 }
 
 const GITHUB_API = 'https://api.github.com'
@@ -14,7 +15,7 @@ function headers(env: Env): HeadersInit {
 }
 
 export async function listDirectory(env: Env, path: string): Promise<GhContent[]> {
-  const url = `${GITHUB_API}/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/notes/${path}`
+  const url = `${GITHUB_API}/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${env.NOTES_PATH}/${path}`
   const res = await fetch(url, { headers: headers(env) })
   if (!res.ok) {
     if (res.status === 404) throw new Error('NOT_FOUND')
@@ -25,7 +26,7 @@ export async function listDirectory(env: Env, path: string): Promise<GhContent[]
 }
 
 export async function getFileContent(env: Env, path: string): Promise<GhFileContent> {
-  const url = `${GITHUB_API}/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/notes/${path}`
+  const url = `${GITHUB_API}/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${env.NOTES_PATH}/${path}`
   const res = await fetch(url, { headers: headers(env) })
   if (!res.ok) {
     if (res.status === 404) throw new Error('NOT_FOUND')
@@ -35,7 +36,7 @@ export async function getFileContent(env: Env, path: string): Promise<GhFileCont
 }
 
 export async function searchCode(env: Env, query: string): Promise<GhSearchResult> {
-  const q = `${query} repo:${env.GITHUB_OWNER}/${env.GITHUB_REPO} path:notes`
+  const q = `${query} repo:${env.GITHUB_OWNER}/${env.GITHUB_REPO} path:${env.NOTES_PATH}`
   const url = `${GITHUB_API}/search/code?q=${encodeURIComponent(q)}`
   const res = await fetch(url, { headers: headers(env) })
   if (!res.ok) throw new Error(`GitHub search error: ${res.status}`)

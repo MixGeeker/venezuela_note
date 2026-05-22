@@ -39,5 +39,6 @@ export interface Env {
   GITHUB_TOKEN: string
   GITHUB_OWNER: string
   GITHUB_REPO: string
+  NOTES_PATH: string
   NOTES_CACHE: KVNamespace
 }

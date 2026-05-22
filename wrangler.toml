@@ -9,4 +9,5 @@ id = "PLACEHOLDER_KV_NAMESPACE_ID"
 
 [vars]
 GITHUB_OWNER = "MixGeeker"
-GITHUB_REPO = "venezuela_note"
+GITHUB_REPO = "your-notes-repo"
+NOTES_PATH = ""
