@@ -10,7 +10,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <router-link to="/" class="font-bold text-lg text-gray-900">Note System</router-link>
+      <router-link to="/" class="font-bold text-lg text-gray-900">{{ configStore.siteConfig.title }}</router-link>
       <div class="flex-1" />
       <SearchBar />
     </header>
@@ -44,14 +44,20 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useNotesStore } from '@/stores/notes'
 import { useUiStore } from '@/stores/ui'
+import { useConfigStore } from '@/stores/config'
 import FolderTree from '@/components/FolderTree.vue'
 import SearchBar from '@/components/SearchBar.vue'
 
 const notesStore = useNotesStore()
 const uiStore = useUiStore()
+const configStore = useConfigStore()
+
+watch(() => configStore.siteConfig.title, (title) => {
+  document.title = title
+})
 
 onMounted(() => {
   if (notesStore.tree.length === 0) {

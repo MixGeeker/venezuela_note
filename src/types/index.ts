@@ -35,6 +35,11 @@ export interface ApiError {
   status: number
 }
 
+export interface SiteConfig {
+  title: string
+  description?: string
+}
+
 export interface Env {
   GITHUB_TOKEN: string
   GITHUB_OWNER: string
