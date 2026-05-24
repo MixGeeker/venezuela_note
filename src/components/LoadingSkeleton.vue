@@ -1,7 +1,6 @@
 <template>
   <div v-if="type === 'note'">
     <div class="animate-pulse">
-      <div class="h-8 bg-gray-200 rounded w-2/3 mb-4" />
       <div class="flex gap-2 mb-6">
         <div class="h-5 bg-gray-200 rounded w-16" />
         <div class="h-5 bg-gray-200 rounded w-20" />

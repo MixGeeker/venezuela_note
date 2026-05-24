@@ -1,16 +1,12 @@
 <template>
   <article v-if="note">
-    <header class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">
-        {{ note.meta.title || displayName(note.meta.name) }}
-      </h1>
-
-      <div class="flex flex-wrap items-center gap-3 mt-3 text-sm text-gray-500">
+    <header v-if="hasHeaderMeta" class="mb-6">
+      <div v-if="hasInlineMeta" class="flex flex-wrap items-center gap-3 text-sm text-gray-500">
         <span v-if="note.frontmatter?.date">{{ note.frontmatter.date }}</span>
         <span v-if="note.meta.aliases.length">Aliases: {{ note.meta.aliases.join(', ') }}</span>
       </div>
 
-      <div v-if="note.meta.tags.length" class="flex flex-wrap gap-2 mt-3">
+      <div v-if="note.meta.tags.length" class="flex flex-wrap gap-2" :class="{ 'mt-3': hasInlineMeta }">
         <router-link
           v-for="tag in note.meta.tags"
           :key="tag"
@@ -67,9 +63,8 @@ const renderedHtml = computed(() => {
   return renderMarkdown(content, props.note)
 })
 
-function displayName(name: string): string {
-  return name.replace(/\.md$/, '')
-}
+const hasInlineMeta = computed(() => Boolean(props.note.frontmatter?.date) || props.note.meta.aliases.length > 0)
+const hasHeaderMeta = computed(() => hasInlineMeta.value || props.note.meta.tags.length > 0)
 </script>
 
 <style>

@@ -20,6 +20,11 @@ const router = createRouter({
       component: () => import('./pages/SearchPage.vue'),
     },
     {
+      path: '/tools/cash-bundle',
+      name: 'cash-bundle-tool',
+      component: () => import('./pages/CashBundlePage.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('./pages/NotFoundPage.vue'),
