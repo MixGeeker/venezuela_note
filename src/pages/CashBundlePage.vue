@@ -37,15 +37,14 @@
       </section>
 
       <section class="cash-summary-card">
-        <div>
-          <p class="cash-currency-name">{{ currentCurrency.code }} · {{ currentCurrency.name }}</p>
-          <p class="cash-summary-label">总金额</p>
-          <p class="cash-column-label">500 / 100 / Loose</p>
+        <div class="cash-summary-meta">
+          <div>
+            <p class="cash-currency-name">{{ currentCurrency.code }} · {{ currentCurrency.name }}</p>
+            <p class="cash-summary-label">总金额</p>
+          </div>
+          <p class="cash-total-notes">总张数 · {{ formatWholeNumber(totals.totalNotes) }}</p>
         </div>
-        <div class="cash-summary-total">
-          <p>{{ formatCashAmount(currency, totals.totalAmount) }}</p>
-          <span>总张数 · {{ formatWholeNumber(totals.totalNotes) }}</span>
-        </div>
+        <p class="cash-summary-total">{{ formatCashAmount(currency, totals.totalAmount) }}</p>
       </section>
 
       <section
@@ -54,11 +53,6 @@
           { subtracting: entryMode === 'button' && buttonAction === 'subtract' },
         ]"
       >
-        <div class="cash-matrix-heading">
-          <span>面额矩阵</span>
-          <strong>500 / 100 / Loose</strong>
-        </div>
-
         <table class="cash-matrix-table">
           <thead>
             <tr>
@@ -612,11 +606,19 @@ async function renderShareImage(): Promise<Blob> {
 }
 
 .cash-summary-card {
-  align-items: center;
+  align-content: center;
   display: grid;
-  gap: 8px;
-  grid-template-columns: 42% minmax(0, 1fr);
+  gap: 7px;
+  grid-template-rows: auto minmax(0, 1fr);
   padding: 10px 12px;
+}
+
+.cash-summary-meta {
+  align-items: start;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  min-width: 0;
 }
 
 .cash-currency-name {
@@ -629,74 +631,54 @@ async function renderShareImage(): Promise<Blob> {
 .cash-summary-label {
   font-size: 16px;
   font-weight: 900;
-  margin-top: 12px;
-}
-
-.cash-column-label {
-  color: #4b5563;
-  font-size: 16px;
-  line-height: 1;
   margin-top: 8px;
 }
 
 .cash-summary-total {
+  align-self: end;
+  font-size: clamp(30px, 9vw, 48px);
+  font-weight: 950;
+  line-height: 0.95;
   min-width: 0;
   text-align: right;
+  white-space: nowrap;
 }
 
-.cash-summary-total p {
-  font-size: clamp(28px, 8vw, 42px);
-  font-weight: 950;
-  line-height: 1;
-}
-
-.cash-summary-total span {
-  display: block;
+.cash-total-notes {
+  border: 1px solid #cbd5e1;
+  color: #111827;
+  flex: 0 0 auto;
   font-size: 12px;
   font-weight: 900;
-  margin-top: 8px;
+  line-height: 1;
+  padding: 5px 7px;
+  white-space: nowrap;
 }
 
 .cash-matrix-panel {
-  background: #f1f5f9;
-  border-color: #d1d5db;
-  display: grid;
-  grid-template-rows: 43px minmax(0, 1fr);
-  min-height: 0;
-  padding: 8px;
-}
-
-.cash-matrix-heading {
-  align-items: center;
+  background: transparent;
+  border: 0;
   display: flex;
-  gap: 12px;
-}
-
-.cash-matrix-heading span {
-  border-left: 4px solid #facc15;
-  font-size: 13px;
-  font-weight: 900;
-  padding-left: 8px;
-}
-
-.cash-matrix-heading strong {
-  font-size: 21px;
-  line-height: 1;
+  min-height: 0;
+  padding: 0;
 }
 
 .cash-matrix-table {
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-collapse: collapse;
+  flex: 1;
+  height: 100%;
   table-layout: fixed;
+  --matrix-head-height: 34px;
   width: 100%;
 }
 
 .cash-matrix-table th,
 .cash-matrix-table td {
   border-bottom: 1px solid #e5e7eb;
-  height: 41px;
-  padding: 3px;
+  height: auto;
+  padding: 4px;
 }
 
 .cash-matrix-table thead th {
@@ -705,7 +687,11 @@ async function renderShareImage(): Promise<Blob> {
   color: #4b5563;
   font-size: 12px;
   font-weight: 900;
-  height: 34px;
+  height: var(--matrix-head-height);
+}
+
+.cash-matrix-table tbody tr {
+  height: calc((100% - var(--matrix-head-height)) / 6);
 }
 
 .cash-matrix-table th:first-child {
@@ -723,19 +709,29 @@ async function renderShareImage(): Promise<Blob> {
   white-space: nowrap;
 }
 
+.cash-matrix-table tbody td {
+  padding: 6px 4px;
+}
+
 .cash-cell-input,
 .cash-cell-button {
   background: #ffffff;
   border: 1px solid #cbd5e1;
+  box-sizing: border-box;
   color: #111827;
-  font-size: 18px;
+  display: flex;
+  font-size: clamp(24px, 6vw, 34px);
   font-weight: 950;
-  height: 34px;
+  height: 100%;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   width: 100%;
 }
 
 .cash-cell-input {
+  display: block;
   outline: none;
 }
 
@@ -1034,11 +1030,11 @@ async function renderShareImage(): Promise<Blob> {
 
   .cash-matrix-table th,
   .cash-matrix-table td {
-    height: 48px;
+    height: auto;
   }
 
   .cash-matrix-table thead th {
-    height: 40px;
+    --matrix-head-height: 40px;
   }
 }
 
@@ -1059,22 +1055,17 @@ async function renderShareImage(): Promise<Blob> {
   }
 
   .cash-matrix-panel {
-    grid-template-rows: 34px minmax(0, 1fr);
-    padding: 6px;
-  }
-
-  .cash-matrix-heading strong {
-    font-size: 18px;
+    padding: 0;
   }
 
   .cash-matrix-table th,
   .cash-matrix-table td {
-    height: 35px;
+    height: auto;
   }
 
   .cash-cell-input,
   .cash-cell-button {
-    height: 29px;
+    min-height: 38px;
   }
 
   .cash-bottom-panel {
