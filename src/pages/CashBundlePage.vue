@@ -194,7 +194,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import {
   BUNDLE_COLUMNS,
   CASH_BUNDLE_HISTORY_KEY,
@@ -221,6 +221,14 @@ import {
 
 type EntryMode = 'input' | 'button'
 type WorkingMatrices = Record<CashCurrency, CashBundleMatrix>
+type LockedPageStyles = {
+  bodyOverflow: string
+  bodyOverscrollBehavior: string
+  bodyTouchAction: string
+  htmlOverflow: string
+  htmlOverscrollBehavior: string
+  htmlTouchAction: string
+}
 
 const currencyOptions = Object.values(CASH_CURRENCIES)
 const bundleColumns = BUNDLE_COLUMNS
@@ -242,10 +250,62 @@ const sharing = ref(false)
 const currentCurrency = computed(() => CASH_CURRENCIES[currency.value])
 const currentMatrix = computed(() => matrices.value[currency.value])
 const totals = computed(() => calculateCashBundleTotals(currency.value, currentMatrix.value))
+let lockedPageStyles: LockedPageStyles | null = null
 
 onMounted(() => {
+  lockPageGestures()
   history.value = parseCashBundleSnapshots(localStorage.getItem(CASH_BUNDLE_HISTORY_KEY))
 })
+
+onUnmounted(() => {
+  unlockPageGestures()
+})
+
+function preventPageGesture(event: Event) {
+  event.preventDefault()
+}
+
+function lockPageGestures() {
+  if (lockedPageStyles) return
+
+  lockedPageStyles = {
+    bodyOverflow: document.body.style.overflow,
+    bodyOverscrollBehavior: document.body.style.overscrollBehavior,
+    bodyTouchAction: document.body.style.touchAction,
+    htmlOverflow: document.documentElement.style.overflow,
+    htmlOverscrollBehavior: document.documentElement.style.overscrollBehavior,
+    htmlTouchAction: document.documentElement.style.touchAction,
+  }
+
+  document.body.style.overflow = 'hidden'
+  document.body.style.overscrollBehavior = 'none'
+  document.body.style.touchAction = 'none'
+  document.documentElement.style.overflow = 'hidden'
+  document.documentElement.style.overscrollBehavior = 'none'
+  document.documentElement.style.touchAction = 'none'
+
+  window.addEventListener('touchmove', preventPageGesture, { passive: false })
+  window.addEventListener('wheel', preventPageGesture, { passive: false })
+  window.addEventListener('gesturestart', preventPageGesture)
+  window.addEventListener('gesturechange', preventPageGesture)
+}
+
+function unlockPageGestures() {
+  if (!lockedPageStyles) return
+
+  document.body.style.overflow = lockedPageStyles.bodyOverflow
+  document.body.style.overscrollBehavior = lockedPageStyles.bodyOverscrollBehavior
+  document.body.style.touchAction = lockedPageStyles.bodyTouchAction
+  document.documentElement.style.overflow = lockedPageStyles.htmlOverflow
+  document.documentElement.style.overscrollBehavior = lockedPageStyles.htmlOverscrollBehavior
+  document.documentElement.style.touchAction = lockedPageStyles.htmlTouchAction
+
+  window.removeEventListener('touchmove', preventPageGesture)
+  window.removeEventListener('wheel', preventPageGesture)
+  window.removeEventListener('gesturestart', preventPageGesture)
+  window.removeEventListener('gesturechange', preventPageGesture)
+  lockedPageStyles = null
+}
 
 function updateCurrentMatrix(nextMatrix: CashBundleMatrix) {
   matrices.value = {
@@ -476,8 +536,16 @@ async function renderShareImage(): Promise<Blob> {
   grid-template-rows: 56px minmax(0, 1fr) 64px;
   height: 100vh;
   height: 100dvh;
+  inset: 0;
   overflow: hidden;
-  position: relative;
+  overscroll-behavior: none;
+  position: fixed;
+  touch-action: none;
+  width: 100%;
+}
+
+.cash-tool-shell * {
+  touch-action: none;
 }
 
 .cash-tool-topbar {

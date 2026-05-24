@@ -12,7 +12,7 @@ export const useConfigStore = defineStore('config', () => {
     lang: 'zh-CN',
     iconUrl: '/api/site-icon?kind=icon',
     faviconUrl: '/api/site-icon?kind=favicon',
-    appleTouchIconUrl: '/api/site-icon?kind=apple',
+    appleTouchIconUrl: '/apple-touch-icon.png',
     maskableIconUrl: '/api/site-icon?kind=maskable',
   })
   const loaded = ref(false)

@@ -105,7 +105,7 @@ wrangler pages deploy dist --project-name note-system --branch main
 
 ```text
 vault:index:v2
-config:site
+config:site:v3
 ```
 
 如果变更索引结构或公开 API 响应结构，考虑是否需要升级缓存 key，避免旧缓存和新代码不兼容。
@@ -192,7 +192,7 @@ lang: zh-CN
 
 当前只支持简单的 `key: value` 形式，不支持复杂嵌套 YAML。`title`、`short_name`、`description`、颜色、语言和图标会用于页面标题、PWA 安装信息、manifest、favicon 和 apple-touch-icon。
 
-图标推荐放在内容仓库的 `assets/` 目录。最小配置只需要 `icon: assets/app-icon.png`，系统会把它同时用于普通图标、favicon、apple 图标和 maskable 图标；需要精细控制时再补充 `favicon`、`apple_touch_icon`、`maskable_icon`。推荐使用正方形 PNG 或 SVG，maskable 图标应预留安全边距。
+图标推荐放在内容仓库的 `assets/` 目录。最小配置建议使用 `icon: assets/app-icon.png`，这样系统可以同时用于普通图标、favicon、apple 图标和 maskable 图标。若 `icon` 使用 SVG 或 WebP，安卓/manifest 通常可用，但 iOS 主屏幕图标需要单独提供 PNG：`apple_touch_icon: assets/apple-touch-icon.png`。系统会让根路径 `/apple-touch-icon.png` 优先返回内容仓库中的 PNG 图标，缺失或读取失败时再退回应用内置图标。需要精细控制时再补充 `favicon`、`apple_touch_icon`、`maskable_icon`；maskable 图标应预留安全边距。
 
 ## 系统能做什么
 

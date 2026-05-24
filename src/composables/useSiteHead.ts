@@ -11,7 +11,7 @@ export function applySiteHead(config: SiteConfig) {
   setMeta('description', config.description ?? '')
   setMeta('theme-color', config.themeColor)
   setLink('icon', config.faviconUrl)
-  setLink('apple-touch-icon', config.appleTouchIconUrl)
+  setLink('apple-touch-icon', config.appleTouchIconUrl, { sizes: '180x180' })
 }
 
 function setMeta(name: string, content: string) {
@@ -24,7 +24,7 @@ function setMeta(name: string, content: string) {
   meta.content = content
 }
 
-function setLink(rel: string, href: string) {
+function setLink(rel: string, href: string, attrs: Record<string, string> = {}) {
   let link = document.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`)
   if (!link) {
     link = document.createElement('link')
@@ -32,4 +32,7 @@ function setLink(rel: string, href: string) {
     document.head.appendChild(link)
   }
   link.href = href
+  for (const [name, value] of Object.entries(attrs)) {
+    link.setAttribute(name, value)
+  }
 }

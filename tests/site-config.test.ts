@@ -24,6 +24,8 @@ test('builds default site config', () => {
   })
   assert.equal(config.iconUrl, siteIconUrl('icon'))
   assert.equal(config.faviconUrl, siteIconUrl('favicon'))
+  assert.equal(siteIconUrl('apple'), '/apple-touch-icon.png')
+  assert.equal(config.appleTouchIconUrl, '/apple-touch-icon.png')
 })
 
 test('parses simple site yaml and normalizes brand fields', () => {
@@ -55,7 +57,23 @@ maskable_icon: assets/maskable.svg
   })
 })
 
-test('uses icon as the fallback for specific icon fields', () => {
+test('uses png icon as the fallback for apple touch icon', () => {
+  const config = resolveSiteConfig(`
+title: Custom
+icon: assets/app-icon.png
+`)
+
+  assert.equal(config.shortName, 'Custom')
+  assert.deepEqual(config.iconPaths, {
+    favicon: 'assets/app-icon.png',
+    apple: 'assets/app-icon.png',
+    icon: 'assets/app-icon.png',
+    maskable: 'assets/app-icon.png',
+  })
+  assert.equal(config.appleTouchIconUrl, '/apple-touch-icon.png')
+})
+
+test('does not use non-png icon as the apple touch fallback', () => {
   const config = resolveSiteConfig(`
 title: Custom
 icon: assets/app-icon.webp
@@ -64,10 +82,27 @@ icon: assets/app-icon.webp
   assert.equal(config.shortName, 'Custom')
   assert.deepEqual(config.iconPaths, {
     favicon: 'assets/app-icon.webp',
-    apple: 'assets/app-icon.webp',
+    apple: null,
     icon: 'assets/app-icon.webp',
     maskable: 'assets/app-icon.webp',
   })
+  assert.equal(config.appleTouchIconUrl, '/apple-touch-icon.png')
+})
+
+test('ignores non-png apple touch icon paths', () => {
+  const config = resolveSiteConfig(`
+title: Custom
+icon: assets/app-icon.svg
+apple_touch_icon: assets/apple-touch-icon.svg
+`)
+
+  assert.deepEqual(config.iconPaths, {
+    favicon: 'assets/app-icon.svg',
+    apple: null,
+    icon: 'assets/app-icon.svg',
+    maskable: 'assets/app-icon.svg',
+  })
+  assert.equal(config.appleTouchIconUrl, '/apple-touch-icon.png')
 })
 
 test('rejects unsafe or non-image icon paths and invalid colors', () => {

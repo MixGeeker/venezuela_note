@@ -47,7 +47,7 @@ export interface WebManifest {
   }>
 }
 
-export const SITE_CONFIG_CACHE_KEY = 'config:site:v2'
+export const SITE_CONFIG_CACHE_KEY = 'config:site:v3'
 export const SITE_CONFIG_CACHE_TTL_SECONDS = 3600
 export const SITE_ICON_KINDS = ['favicon', 'apple', 'icon', 'maskable'] as const
 
@@ -67,7 +67,7 @@ export const DEFAULT_SITE_CONFIG: PublicSiteConfig = {
   lang: 'zh-CN',
   iconUrl: siteIconUrl('icon'),
   faviconUrl: siteIconUrl('favicon'),
-  appleTouchIconUrl: siteIconUrl('apple'),
+  appleTouchIconUrl: DEFAULT_STATIC_ICON_PATHS.apple,
   maskableIconUrl: siteIconUrl('maskable'),
 }
 
@@ -180,6 +180,7 @@ export function isSiteIconKind(value: string | null): value is SiteIconKind {
 }
 
 export function siteIconUrl(kind: SiteIconKind): string {
+  if (kind === 'apple') return DEFAULT_STATIC_ICON_PATHS.apple
   return `/api/site-icon?kind=${kind}`
 }
 
@@ -202,7 +203,9 @@ function resolveIconPaths(values: Record<string, string>): Record<SiteIconKind, 
   const icon = imagePath(values.icon)
   return {
     favicon: imagePath(values.favicon) ?? icon,
-    apple: imagePath(values.apple_touch_icon ?? values.appleTouchIcon) ?? icon,
+    apple:
+      appleTouchIconPath(values.apple_touch_icon ?? values.appleTouchIcon) ??
+      appleTouchIconPath(values.icon),
     icon,
     maskable: imagePath(values.maskable_icon ?? values.maskableIcon) ?? icon,
   }
@@ -234,6 +237,13 @@ function imagePath(value: string | undefined): string | null {
   if (!mimeType.startsWith('image/')) return null
 
   return normalized
+}
+
+function appleTouchIconPath(value: string | undefined): string | null {
+  const path = imagePath(value)
+  if (!path) return null
+
+  return getMimeType(path) === 'image/png' ? path : null
 }
 
 function stringValue(value: string | undefined): string | undefined {
