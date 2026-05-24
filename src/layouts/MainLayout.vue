@@ -30,6 +30,7 @@
       ]"
     >
       <div class="p-4">
+        <PwaInstallButton />
         <FolderTree :nodes="notesStore.tree" :depth="0" />
       </div>
     </aside>
@@ -49,6 +50,7 @@ import { useNotesStore } from '@/stores/notes'
 import { useUiStore } from '@/stores/ui'
 import { useConfigStore } from '@/stores/config'
 import FolderTree from '@/components/FolderTree.vue'
+import PwaInstallButton from '@/components/PwaInstallButton.vue'
 import SearchBar from '@/components/SearchBar.vue'
 
 const notesStore = useNotesStore()
