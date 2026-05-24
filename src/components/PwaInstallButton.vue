@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showInstallEntry" class="mb-4 border-b border-gray-100 pb-4">
+  <div v-if="showInstallEntry" class="border-t border-gray-100 p-4">
     <button
       type="button"
       class="flex w-full items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"

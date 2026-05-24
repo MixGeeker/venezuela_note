@@ -110,7 +110,15 @@ export interface ApiError {
 
 export interface SiteConfig {
   title: string
-  description?: string
+  shortName: string
+  description: string
+  themeColor: string
+  backgroundColor: string
+  lang: string
+  iconUrl: string
+  faviconUrl: string
+  appleTouchIconUrl: string
+  maskableIconUrl: string
 }
 
 export interface Env {

@@ -174,7 +174,7 @@ publish: true
 
 常见可识别类型：
 
-- 图片：`avif`、`bmp`、`gif`、`jpeg`、`jpg`、`png`、`svg`、`webp`
+- 图片：`avif`、`bmp`、`gif`、`ico`、`jpeg`、`jpg`、`png`、`svg`、`webp`
 - 音频：`flac`、`m4a`、`mp3`、`ogg`、`wav`
 - 视频：`mov`、`mp4`、`webm`
 - 文档：`pdf`
@@ -192,9 +192,19 @@ publish: true
 ```yaml
 title: Notes
 description: A public note vault
+short_name: Notes
+icon: assets/app-icon.png
+favicon: assets/favicon.svg
+apple_touch_icon: assets/apple-touch-icon.png
+maskable_icon: assets/maskable-icon.png
+theme_color: "#2563eb"
+background_color: "#f9fafb"
+lang: zh-CN
 ```
 
-当前使用简单 `key: value` 形式，避免复杂嵌套结构。
+当前使用简单 `key: value` 形式，避免复杂嵌套结构。`title`、`short_name`、`description`、颜色、语言和图标会用于页面标题、PWA 安装信息、manifest、favicon 和 apple-touch-icon。
+
+图标推荐放在内容仓库的 `assets/` 目录。最小配置只需要 `icon: assets/app-icon.png`，系统会把它同时用于普通图标、favicon、apple 图标和 maskable 图标；需要精细控制时再补充 `favicon`、`apple_touch_icon`、`maskable_icon`。推荐使用正方形 PNG 或 SVG，maskable 图标应预留安全边距。
 
 ### `site.yml` 参数契约（建议）
 
@@ -207,6 +217,11 @@ description: A public note vault
 
 - `title`：站点标题（必填）
 - `description`：站点简介（必填）
+- `short_name`：PWA 安装后的短名称（可选，默认跟随 `title`）
+- `icon`：默认 PWA 图标路径（可选，推荐放在 `assets/`）
+- `favicon` / `apple_touch_icon` / `maskable_icon`：按平台细分的图标路径（可选）
+- `theme_color` / `background_color`：PWA 主题色和启动背景色（可选，十六进制颜色）
+- `lang`：站点主语言，如 `zh-CN`
 
 #### B. Agent 协作参数（推荐）
 
@@ -226,6 +241,10 @@ description: A public note vault
 ```yaml
 title: Notes
 description: Team knowledge base
+short_name: Notes
+icon: assets/app-icon.png
+theme_color: "#2563eb"
+background_color: "#f9fafb"
 lang: zh-CN
 seed_enabled: true
 seed_topics: getting-started,faq,runbook

@@ -13,35 +13,8 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
-      manifest: {
-        name: 'Notes',
-        short_name: 'Notes',
-        description: 'A public note vault',
-        start_url: '/',
-        scope: '/',
-        display: 'standalone',
-        theme_color: '#2563eb',
-        background_color: '#f9fafb',
-        icons: [
-          {
-            src: '/icons/pwa-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: '/icons/pwa-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: '/icons/maskable-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-        ],
-      },
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'icons/*.png'],
+      manifest: false,
       workbox: {
         cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,woff,woff2}'],
@@ -57,6 +30,36 @@ export default defineConfig({
               networkTimeoutSeconds: 3,
               expiration: {
                 maxEntries: 5,
+                maxAgeSeconds: 60 * 60,
+              },
+              cacheableResponse: {
+                statuses: [200],
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname === '/api/manifest',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-manifest',
+              networkTimeoutSeconds: 3,
+              expiration: {
+                maxEntries: 5,
+                maxAgeSeconds: 60 * 60,
+              },
+              cacheableResponse: {
+                statuses: [200],
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname === '/api/site-icon',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-site-icon',
+              networkTimeoutSeconds: 3,
+              expiration: {
+                maxEntries: 20,
                 maxAgeSeconds: 60 * 60,
               },
               cacheableResponse: {

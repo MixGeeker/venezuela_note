@@ -166,7 +166,7 @@ publish: true
 
 当前主要识别：
 
-- 图片：`avif`、`bmp`、`gif`、`jpeg`、`jpg`、`png`、`svg`、`webp`
+- 图片：`avif`、`bmp`、`gif`、`ico`、`jpeg`、`jpg`、`png`、`svg`、`webp`
 - 音频：`flac`、`m4a`、`mp3`、`ogg`、`wav`
 - 视频：`mov`、`mp4`、`webm`
 - 文档：`pdf`
@@ -180,9 +180,19 @@ publish: true
 ```yaml
 title: Notes
 description: A public note vault
+short_name: Notes
+icon: assets/app-icon.png
+favicon: assets/favicon.svg
+apple_touch_icon: assets/apple-touch-icon.png
+maskable_icon: assets/maskable-icon.png
+theme_color: "#2563eb"
+background_color: "#f9fafb"
+lang: zh-CN
 ```
 
-当前只支持简单的 `key: value` 形式，不支持复杂嵌套 YAML。
+当前只支持简单的 `key: value` 形式，不支持复杂嵌套 YAML。`title`、`short_name`、`description`、颜色、语言和图标会用于页面标题、PWA 安装信息、manifest、favicon 和 apple-touch-icon。
+
+图标推荐放在内容仓库的 `assets/` 目录。最小配置只需要 `icon: assets/app-icon.png`，系统会把它同时用于普通图标、favicon、apple 图标和 maskable 图标；需要精细控制时再补充 `favicon`、`apple_touch_icon`、`maskable_icon`。推荐使用正方形 PNG 或 SVG，maskable 图标应预留安全边距。
 
 ## 系统能做什么
 

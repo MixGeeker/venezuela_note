@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { useConfigStore } from './stores/config'
+import { applySiteHead } from './composables/useSiteHead'
 import './assets/main.css'
 
 const app = createApp(App)
@@ -12,6 +13,6 @@ app.use(router)
 
 const configStore = useConfigStore()
 configStore.fetchConfig().then(() => {
-  document.title = configStore.siteConfig.title
+  applySiteHead(configStore.siteConfig)
   app.mount('#app')
 })

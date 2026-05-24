@@ -25,14 +25,14 @@
     <!-- Sidebar -->
     <aside
       :class="[
-        'fixed top-14 left-0 bottom-0 z-20 w-72 bg-white border-r border-gray-200 overflow-y-auto transition-transform duration-200',
+        'fixed top-14 left-0 bottom-0 z-20 flex w-72 flex-col overflow-hidden bg-white border-r border-gray-200 transition-transform duration-200',
         uiStore.sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
       ]"
     >
-      <div class="p-4">
-        <PwaInstallButton />
+      <div class="flex-1 overflow-y-auto p-4">
         <FolderTree :nodes="notesStore.tree" :depth="0" />
       </div>
+      <PwaInstallButton />
     </aside>
 
     <!-- Main content -->
