@@ -10,7 +10,18 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <router-link to="/" class="font-bold text-lg text-gray-900">{{ configStore.siteConfig.title }}</router-link>
+      <router-link
+        to="/"
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        aria-label="返回主页"
+        title="返回主页"
+      >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10.5 12 3l9 7.5" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 9.5V21h14V9.5" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.5 21v-6h5v6" />
+        </svg>
+      </router-link>
       <div class="flex-1" />
       <SearchBar />
     </header>
